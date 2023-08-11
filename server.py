@@ -1,5 +1,8 @@
-import requests, os
+import requests, os, logging
 from flask import Flask, render_template
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+LOGGER = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -22,6 +25,7 @@ def get_weather_data(city):
 
 @app.route('/')
 def get_weather_data_all_cities():
+    LOGGER.info('Getting weather data for all cities')
     weather_data = {}
     for city, city_name in CITIES.items():
         data = get_weather_data(city.lower())
