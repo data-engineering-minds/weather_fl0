@@ -43,6 +43,10 @@
             margin-bottom: 10px;
             text-transform: capitalize;
         }
+        .city p {
+            font-size: 14px;
+            margin: 5px;
+        }
         select {
             margin-top: 10px; /* Adjusted margin */
             font-size: 14px;
@@ -55,7 +59,10 @@
 <body>
 <div class="header">Germany - Weather Report</div>
 
-<!-- Drop Down to select city -->
+<!-- Display the click count -->
+<p><strong>Number of Page Visits Today:</strong> {{ click_count }}</p>
+
+<!-- Add a dropdown menu for city selection -->
 <select id="citySelector" onchange="updateWeather()">
     <option value="">Select a city</option>
     {% for city, data in weather_data|dictsort %}
@@ -64,17 +71,49 @@
 </select>
 
 <div class="container" id="weatherContainer">
-    <!-- Display area for weather data -->
+    <!-- Weather data will be displayed here -->
 </div>
+<div id="mostSelectedCity" class="city" style="position: absolute; top: 20px; right: 20px;"></div>
 
-
-<!-- Javascript for weather information -->
+<!-- Add JavaScript to update weather information -->
 <script>
     function updateWeather() {
         var selectedCity = document.getElementById("citySelector").value;
         var weatherContainer = document.getElementById("weatherContainer");
+        var mostSelectedCityContainer = document.getElementById("mostSelectedCity");
+
         weatherContainer.innerHTML = "";  // Clear previous weather data
 
+        if (selectedCity !== "") {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/track_city_selection", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    console.log("City selection recorded successfully");
+                }
+            };
+            xhr.send("selectedCity=" + selectedCity);
+        }
+
+        // Fetch and display the most selected city's weather information
+        var xhrMostSelected = new XMLHttpRequest();
+        xhrMostSelected.open("GET", "/most_selected_city", true);
+        xhrMostSelected.onreadystatechange = function() {
+            if (xhrMostSelected.readyState === XMLHttpRequest.DONE && xhrMostSelected.status === 200) {
+                var mostSelectedCityData = JSON.parse(xhrMostSelected.responseText);
+                mostSelectedCityContainer.innerHTML = `
+                    <h2 style="font-weight: bold;">Most Viewed City Today</h2>
+                    <h2>${mostSelectedCityData.city_name}</h2>
+                    <p><strong>Temperature:</strong> ${mostSelectedCityData.temperature}°C</p>
+                    <p><strong>Weather:</strong> ${mostSelectedCityData.weather_description}</p>
+                    <p><strong>Feels Like:</strong>: ${mostSelectedCityData.feel_temperature}°C</p>
+                    <p><strong>Humidity:</strong> ${mostSelectedCityData.humidity}%</p>
+                    <p><strong>Pressure:</strong> ${mostSelectedCityData.pressure} mb</p>
+                `;
+            }
+        };
+        xhrMostSelected.send();
 
         if (selectedCity !== "") {
             var data = {{ weather_data | tojson }};
@@ -92,6 +131,9 @@
             weatherContainer.appendChild(cityDiv);
         }
     }
+
+    // Call the updateWeather function initially to display the most selected city by default
+    updateWeather();
 </script>
 </body>
 </html>
