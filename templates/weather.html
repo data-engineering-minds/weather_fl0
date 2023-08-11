@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Germany - Weather Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f6fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
+        }
+        .header {
+            margin: 20px 0;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 800px;
+            margin-top: 100px;
+        }
+        .city {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .city h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+        }
+        select {
+            margin-top: 10px; /* Adjusted margin */
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="header">Germany - Weather Report</div>
+
+<!-- Drop Down to select city -->
+<select id="citySelector" onchange="updateWeather()">
+    <option value="">Select a city</option>
+    {% for city, data in weather_data|dictsort %}
+    <option value="{{ city }}">{{ data['city_name']|capitalize }}</option>
+    {% endfor %}
+</select>
+
+<div class="container" id="weatherContainer">
+    <!-- Display area for weather data -->
+</div>
+
+
+<!-- Javascript for weather information -->
+<script>
+    function updateWeather() {
+        var selectedCity = document.getElementById("citySelector").value;
+        var weatherContainer = document.getElementById("weatherContainer");
+        weatherContainer.innerHTML = "";  // Clear previous weather data
+
+
+        if (selectedCity !== "") {
+            var data = {{ weather_data | tojson }};
+            var cityData = data[selectedCity];
+            var cityDiv = document.createElement("div");
+            cityDiv.className = "city";
+            cityDiv.innerHTML = `
+                <h2>${cityData.city_name}</h2>
+                <p><strong>Temperature:</strong> ${cityData.temperature}°C</p>
+                <p><strong>Weather:</strong> ${cityData.weather_description}</p>
+                <p><strong>Feels Like:</strong>: ${cityData.feel_temperature}°C</p>
+                <p><strong>Humidity:</strong> ${cityData.humidity}%</p>
+                <p><strong>Pressure:</strong> ${cityData.pressure} mb</p>
+            `;
+            weatherContainer.appendChild(cityDiv);
+        }
+    }
+</script>
+</body>
+</html>
