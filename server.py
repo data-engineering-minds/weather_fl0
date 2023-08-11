@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 
+
 API_KEY = os.environ.get('API_KEY')
 CITIES = {'berlin': 'Berlin,de', 'hamburg': 'Hamburg,de', 'dusseldorf': 'Dusseldorf,de',
           'munich': 'Munich,de', 'cologne': 'Cologne,de', 'frankfurt': 'Frankfurt,de',
@@ -39,6 +40,9 @@ class CitySelection(db.Model):
     __table_args__ = (
         PrimaryKeyConstraint('city', 'date', name ='_city_date_pk'),
     )
+
+with app.app_context():
+    db.create_all()
 
 def get_click_count(today):
     click_count_entry = ClickUrl.query.filter_by(url ='/', click_date=today).first()
@@ -116,6 +120,4 @@ def get_weather_data_all_cities():
 
 if __name__ == '__main__':
      port = int(os.environ.get('PORT', 5000))
-     with app.app_context():
-         db.create_all()
      app.run(host='0.0.0.0', port=port)
