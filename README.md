@@ -1,5 +1,5 @@
 # weather_fl0
-A Python application that uses [Flask](https://flask.palletsprojects.com/en/2.3.x/) and [OpenWeatherMap](https://openweathermap.org/) API to perform the following:
+A Python web service application that uses [Flask](https://flask.palletsprojects.com/en/2.3.x/) and [OpenWeatherMap](https://openweathermap.org/) API to perform the following:
 
 * Display the weather data for different cities in Germany.
 * Display the weather data for the city viewed most number of times in the current day.
