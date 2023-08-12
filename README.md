@@ -1,5 +1,5 @@
 # weather_fl0
-A Python application that uses flask and OpenWeatherMap API that does the following:
+A Python application that uses flask and OpenWeatherMap API to perform the following:
 
 * Display the weather data for different cities in Germany.
 * Display the weather data for the city viewed most number of times in the current day.
