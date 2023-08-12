@@ -14,7 +14,7 @@ A Python application that uses flask and OpenWeatherMap API to perform the follo
 
 ## Things to remember before deploying in [FL0](https://www.fl0.com/)
 * Create the environment variables specified in the file *[`.env_flo`](.env_fl0)* on FL0.
-* For *DATABASE_URL*, specify the first part of the hostname as endpoint for options. For example,:<br/>
+* For *DATABASE_URL*, specify the first part of the hostname as endpoint for options. For example,<br/>
 `postgresql://<USER>:<PASSWORD>@ep-noisy-queen-65812933.eu-central-1.aws.neon.tech:5432/<DATABASE_NAME>?options=endpoint%3Dep-noisy-queen-65812933`
 
 
