@@ -23,6 +23,7 @@ CITIES = {'berlin': 'Berlin,de', 'hamburg': 'Hamburg,de', 'dusseldorf': 'Dusseld
           'kassel': 'Kassel,de', 'saarbrucken': 'Saarbrucken,de', 'potsdam': 'Potsdam,de',
           'wurzburg': 'Wurzburg,de', 'ulm': 'Ulm,de', 'mannheim': 'Mannheim,de'}
 
+""" Model for Tracking the URL visit """
 class ClickUrl(db.Model):
     url = db.Column(db.String(200), nullable=False)
     click_count = db.Column(db.Integer, nullable=False, default=0)
@@ -32,6 +33,7 @@ class ClickUrl(db.Model):
         PrimaryKeyConstraint('url', 'click_date', name ='_url_date_pk'),
     )
 
+""" Model for Tracking the City selection from drop down """
 class CitySelection(db.Model):
     city = db.Column(db.String(200), nullable=False)
     date = db.Column(db.Date, nullable=False, default=date.today())
@@ -44,15 +46,18 @@ class CitySelection(db.Model):
 with app.app_context():
     db.create_all()
 
+""" Function to fetch the number of page visits from backend database """
 def get_click_count(today):
     click_count_entry = ClickUrl.query.filter_by(url ='/', click_date=today).first()
     return 0 if click_count_entry is None else click_count_entry.click_count
 
+""" Function to call the OpenWeatherMap API with input city name and API key """
 def get_weather_data(city):
     url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric'
     response = requests.get(url)
     return response.json()
 
+""" Function to track the city selection from UI drop down to backend database  """
 @app.route('/track_city_selection', methods=['POST'])
 def track_city_selection():
     selected_city = request.form.get('selectedCity')
@@ -71,6 +76,7 @@ def track_city_selection():
     else:
         return "Invalid city selection", 400
 
+""" Function to fetch the city with most number of views and return the weather to UI """
 @app.route('/most_selected_city', methods=['GET'])
 def get_most_selected_city():
     today = date.today()
@@ -90,6 +96,11 @@ def get_most_selected_city():
         return jsonify({'message': 'No city selected yet'}), 404
 
 
+""" Function to
+1) Add a click entry everytime the endpoint is hit
+2) Fetch weather information for all cities from OpenWeatherMap API
+3) Render the above data in a HTML template
+"""
 @app.route('/')
 def get_weather_data_all_cities():
     LOGGER.info('Getting weather data for all cities')
